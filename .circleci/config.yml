@@ -21,6 +21,7 @@ jobs:
 
   deploy-staging:
     executor:
+      steps:
         - checkout
         - run:
             name: Plan a deploy
