@@ -1,0 +1,20 @@
+version: 2.1
+
+executors:
+  default:
+    docker:
+       - image: cimg/deploy:2025.01
+
+
+jobs:
+  build:
+    executor: default
+    steps:
+      - checkout
+      - run: terraform version
+      - run: helm version
+
+workflows:
+   main:
+     jobs:
+       - build
