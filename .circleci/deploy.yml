@@ -58,10 +58,10 @@ jobs:
 workflows:
   deploy-notify:
      jobs:
-       - deploy-notify
-          #filters:
-            #tags:
-              #only: /^v.*/
+       - deploy-notify:
+          filters:
+            tags:
+              only: /^v.*/
        
   deploy-prod: 
     when: 
