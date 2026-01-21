@@ -9,10 +9,9 @@ jobs:
     docker:
       - image: cimg/base:current
     environment:
-      COMPONENT_NAME: << pipeline.deploy.component_name >>
-      NAMESPACE: << pipeline.deploy.namespace >>
-      ENVIRONMENT_NAME: << pipeline.deploy.environment_name >>
-      TARGET_VERSION: << pipeline.deploy.target_version >>
+      COMPONENT_NAME: "nodejs"
+      ENVIRONMENT_NAME: "prod-gh-app-test"
+      TARGET_VERSION: <<pipeline.git.tag>>
     steps:
       - checkout
       - attach_workspace:
@@ -24,15 +23,12 @@ jobs:
           command: |
             circleci run release plan  \
               --environment-name=${ENVIRONMENT_NAME} \
-              --namespace=${NAMESPACE} \
               --component-name=${COMPONENT_NAME} \
               --target-version=${TARGET_VERSION}
       - run:
           name: Perform deployment
           command:
-            echo "deploy"
-      # These last two steps update the PENDING deployment marker
-      # to SUCCESS or FAILED, based on the outcome of the job.
+            echo "This is a deploy on <<pipeline.git.tag>>"
       - run:
           name: Update planned release to SUCCESS
           command: |
@@ -46,8 +42,7 @@ jobs:
              --status=FAILED \
           when: on_fail
 
-  # This job handles the cancellation of the deploy marker
-  # if the deploy job is canceled
+
   cancel-deploy:
     docker:
       - image: cimg/base:current
@@ -59,13 +54,9 @@ jobs:
              --status=CANCELED
 
 workflows:
-  deploy:
+  deploy-prod: 
+    when: pipeline.definition.id == "c6a26db7-ce9e-4c90-8cba-119757e824b6" and pipeline.git.tag starts-with "v"
     jobs:
       - deploy-component
-      - cancel-deploy:
-          requires:
-            - deploy-component:
-              - canceled
-          filters:
-            branches:
-              only: main
+
+
