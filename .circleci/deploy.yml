@@ -17,7 +17,6 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
-
       # This step will create a new deploy with PENDING status
       # that will show up in the deploys tab in the UI
       - run:
@@ -28,12 +27,10 @@ jobs:
               --namespace=${NAMESPACE} \
               --component-name=${COMPONENT_NAME} \
               --target-version=${TARGET_VERSION}
-
       - run:
           name: Perform deployment
           command:
-            # Add here your custom logic to perform the deployment
-
+            echo "deploy"
       # These last two steps update the PENDING deployment marker
       # to SUCCESS or FAILED, based on the outcome of the job.
       - run:
