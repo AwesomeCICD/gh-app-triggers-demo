@@ -1,6 +1,5 @@
 # This is a template CircleCI deploy config
 # that shows how to use deploy markers to track deployments.
-# You can edit this template to add your custom deployment logic.
 
 version: 2.1
 
