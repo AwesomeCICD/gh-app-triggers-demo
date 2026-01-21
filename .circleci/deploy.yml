@@ -74,6 +74,6 @@ workflows:
         - matches: { pattern: "^v$", value: << pipeline.git.tag >> }
     jobs:
       - deploy-component
-          #filters:
-            #tags:
-              #only: /^v.*/
+          filters:
+            tags:
+              only: /^v.*/
