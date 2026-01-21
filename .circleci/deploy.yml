@@ -59,7 +59,10 @@ jobs:
 workflows:
   deploy-notify:
      jobs:
-       - deploy-notify
+       - deploy-notify:
+          filters:
+            tags:
+              only: /^v.*/
        
   deploy-prod: 
     when: 
@@ -67,6 +70,7 @@ workflows:
         - equal: [ "c6a26db7-ce9e-4c90-8cba-119757e824b6", << pipeline.definition.id >> ]
         - matches: { pattern: "^v$", value: << pipeline.git.tag >> }
     jobs:
-      - deploy-component
-
-
+      - deploy-component:
+          filters:
+            tags:
+              only: /^v.*/
