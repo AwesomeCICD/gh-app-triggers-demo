@@ -42,6 +42,7 @@ jobs:
         
 workflows:
    main:
+     when: pipeline.definition.id == "7d3ab968-9ae7-4311-b408-dc362d3ffeae" and pipeline.git.branch == "main"
      jobs:
        - build
        - deploy-staging
