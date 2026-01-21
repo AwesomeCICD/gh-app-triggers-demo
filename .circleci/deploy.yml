@@ -5,6 +5,9 @@
 version: 2.1
 
 jobs:
+  deploy-notify:
+    type: no-op
+    
   deploy-component:
     docker:
       - image: cimg/base:current
@@ -54,6 +57,10 @@ jobs:
              --status=CANCELED
 
 workflows:
+  deploy-notify:
+     jobs:
+       - deploy-notify
+       
   deploy-prod: 
     when: 
       and:
