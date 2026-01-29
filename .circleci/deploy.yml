@@ -41,7 +41,7 @@ workflows:
        - ui-deploy-prod:
             filters: pipeline.git.branch == "main" and pipeline.trigger_source == "api"
             requires:
-               - build
+               - build-no-op
 
 commands:
   deploy-step:
