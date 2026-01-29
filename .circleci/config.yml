@@ -37,7 +37,7 @@ jobs:
               --environment-name=${ENVIRONMENT_NAME} \
               --component-name=${COMPONENT_NAME} \
               --target-version=${TARGET_VERSION}
-      # Your job here doing the actual deployment
+      - run: echo "Docker build and tag will happen here...."
       - run:
           name: Update a deploy to SUCCESS
           command: circleci run release update --status=SUCCESS 
