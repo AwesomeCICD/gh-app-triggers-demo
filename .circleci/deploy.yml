@@ -53,7 +53,7 @@ commands:
       component-name:
         type: string
       target-version:
-        type: integer
+        type: string
     steps:
       - checkout
       - run:
