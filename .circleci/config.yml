@@ -1,12 +1,21 @@
 version: 2.1
 
 parameters:
+  component-name:
+    type: string
+    default: "nodejs"
   staging-environment:
     type: string
     default: "nodejs-staging"
   version:
     type: string
-    default: "v0.0.1"
+    default: "stable"
+  nodejs-prod-component-id:
+    type: string
+    default: "cadfd156-5e17-42ef-9a5f-4e4f5c1b26e8"
+  nodejs-staging-component-id:
+    type: string
+    default: "96213b3f-45f0-490c-8b2a-23d149e8f220"
 
 
 executors:
@@ -14,12 +23,11 @@ executors:
     docker:
        - image: cimg/deploy:2025.01
     resource_class: small
-    environment:
-      COMPONENT_NAME: "nodejs"
-      ENVIRONMENT_NAME: "nodejs-staging"
-      TARGET_VERSION: <<pipeline.parameters.version>>
 
 jobs:
+  build-no-op:
+    type: no-op
+    
   build:
     executor: default
     steps:
@@ -27,19 +35,71 @@ jobs:
       - run: terraform version
       - run: helm version
 
+  deploy-prod:
+    executor: default
+    steps:
+      - run:
+          name: Skip prod deployment if it's the same version already
+          command: |
+              
+      - deploy-step:
+           deploy-name: "promoting to prod (auto)"
+           environment-name: "nodejs-prod"
+           component-name: <<pipeline.parameters.component-name>>
+           target-version: <<pipeline.parameters.version>>
+
   deploy-staging:
     executor: default
+    steps:
+      - deploy-step:
+           deploy-name: "build and promote to stage (auto)"
+           environment-name: <<parameters.parameters.staging-environment>>
+           component-name: <<pipeline.parameters.component-name>>
+           target-version: <<pipeline.number>>
+                      
+        
+workflows:
+   prod:
+     when: pipeline.git.branch == "main"
+     jobs:
+       - build-no-op
+       #- deploy-prod:
+       #     filters: pipeline.git.branch == "main"
+       #     requires:
+       #        - build-no-op
+       
+   staging:
+     when: pipeline.git.branch != "main"
+     jobs:
+       - build
+       - deploy-staging:
+            requires:
+              - build:
+                  - success
+
+
+commands:
+  deploy-step:
+    parameters:
+      deploy-name:
+        type: string
+      environment-name:
+        type: string
+      component-name:
+        type: string
+      target-version:
+        type: string
     steps:
       - checkout
       - run:
           name: Plan release of staging release
           command: |
-            circleci run release plan  \
-              --environment-name=${ENVIRONMENT_NAME} \
-              --component-name=${COMPONENT_NAME} \
-              --target-version=${TARGET_VERSION}
+            circleci run release plan <<parameters.deploy-name>>  \
+              --environment-name=<<parameters.environment-name>> \
+              --component-name=<<parameters.component-name>> \
+              --target-version=<<parameters.target-version>>
       - run: echo "Docker build and tag will happen here...."
-      - run: echo "push a tiny image to ECR"
+      - run: echo "Push a tiny image to ECR"
       - run:
           name: Update a deploy to SUCCESS
           command: circleci run release update --status=SUCCESS 
@@ -48,12 +108,3 @@ jobs:
           name: Update planned deploy to FAILED
           command: circleci run release update --status=FAILED 
           when: on_fail
-        
-workflows:
-   main:
-     when: pipeline.git.branch != "main"
-     jobs:
-       - build
-       - deploy-staging:
-            requires:
-              - build
