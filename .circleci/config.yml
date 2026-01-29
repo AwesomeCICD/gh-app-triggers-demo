@@ -41,7 +41,7 @@ jobs:
           command: |
               
       - deploy-step:
-           deploy-name: "promoting to prod (auto)"
+           deploy-name: "deploy-to-prod-auto"
            environment-name: "nodejs-prod"
            component-name: <<pipeline.parameters.component-name>>
            target-version: <<pipeline.parameters.version>>
@@ -50,7 +50,7 @@ jobs:
     executor: default
     steps:
       - deploy-step:
-           deploy-name: "build and promote to stage (auto)"
+           deploy-name: "deploy-staging-auto"
            environment-name: <<pipeline.parameters.staging-environment>>
            component-name: <<pipeline.parameters.component-name>>
            target-version: <<pipeline.number>>
