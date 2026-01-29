@@ -3,25 +3,35 @@
 
 version: 2.1
 
-jobs:
-  deploy-notify:
-    type: no-op
-    
-  deploy-component:
+parameters:
+  version:
+    type: string
+    default: "stable"
+
+executors:
+  prod-deploy:
     docker:
       - image: cimg/base:current
     environment:
       COMPONENT_NAME: "nodejs"
-      ENVIRONMENT_NAME: "prod-gh-app-test"
-      TARGET_VERSION: <<pipeline.git.tag>>
+      ENVIRONMENT_NAME: "nodejs-prod"
+      TARGET_VERSION: <<pipeline.parameters.version>>
+
+jobs:
+  deploy-notify:
+    type: no-op
+    
+  deploy-prod:
+    docker:
+      - image: cimg/base:current
+    environment:
+      COMPONENT_NAME: "nodejs"
+      ENVIRONMENT_NAME: "nodejs-prod"
+      TARGET_VERSION: <<pipeline.parameters.version>>
     steps:
       - checkout
-      - attach_workspace:
-          at: .
-      # This step will create a new deploy with PENDING status
-      # that will show up in the deploys tab in the UI
       - run:
-          name: Plan release of deploy release
+          name: Plan release of prod release
           command: |
             circleci run release plan  \
               --environment-name=${ENVIRONMENT_NAME} \
@@ -30,7 +40,7 @@ jobs:
       - run:
           name: Perform deployment
           command:
-            echo "This is a deploy on <<pipeline.git.tag>>"
+            echo "This is a deploy on <<pipeline.git.branch>>"
       - run:
           name: Update planned release to SUCCESS
           command: |
@@ -55,19 +65,11 @@ jobs:
             circleci run release update \
              --status=CANCELED
 
-workflows:
-  deploy-notify:
-    when: 
-      and:
-        - equal: [ "c6a26db7-ce9e-4c90-8cba-119757e824b6", << pipeline.definition.id >> ]
-        - matches: { pattern: "^v$", value: << pipeline.git.tag >> }
-    jobs:
-      - deploy-notify
-       
+workflows:       
   deploy-prod: 
-    when: 
-      and:
-        - equal: [ "c6a26db7-ce9e-4c90-8cba-119757e824b6", << pipeline.definition.id >> ]
-        - matches: { pattern: "^v$", value: << pipeline.git.tag >> }
+    when: pipeline.git.branch == "main"
     jobs:
-      - deploy-component
+      - deploy-prod
+      - deploy-notify:
+           requires:
+             - deploy-prod
