@@ -97,7 +97,7 @@ commands:
       - run:
           name: Plan release of staging release
           command: |
-            circleci run release plan  \
+            circleci run release plan <<parameters.deploy-name>>  \
               --environment-name=<<parameters.environment-name>> \
               --component-name=<<parameters.component-name>> \
               --target-version=<<parameters.target-version>>
@@ -105,9 +105,9 @@ commands:
       - run: echo "Push a tiny image to ECR"
       - run:
           name: Update a deploy to SUCCESS
-          command: circleci run release update --status=SUCCESS 
+          command: circleci run release update <<parameters.deploy-name>> --status=SUCCESS 
           when: on_success 
       - run:
           name: Update planned deploy to FAILED
-          command: circleci run release update --status=FAILED 
+          command: circleci run release update <<parameters.deploy-name>> --status=FAILED 
           when: on_fail
