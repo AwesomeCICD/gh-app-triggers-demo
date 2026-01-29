@@ -13,6 +13,7 @@ executors:
   default:
     docker:
        - image: cimg/deploy:2025.01
+    resource_class: small
     environment:
       COMPONENT_NAME: "nodejs"
       ENVIRONMENT_NAME: "nodejs-staging"
