@@ -20,6 +20,11 @@ parameters:
 
 executors:
   default:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    
+  default-machine:
     machine:
       image: ubuntu-2404:current
     resource_class: medium
