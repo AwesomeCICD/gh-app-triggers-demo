@@ -97,7 +97,7 @@ commands:
       - run:
           name: Plan release of staging release
           command: |
-            circleci run release plan <<parameters.deploy-name>>  \
+            circleci run release plan  \
               --environment-name=<<parameters.environment-name>> \
               --component-name=<<parameters.component-name>> \
               --target-version=<<parameters.target-version>>
