@@ -61,10 +61,10 @@ workflows:
    prod:
      when: pipeline.git.branch == "main" and pipeline.trigger_source == "api"
      jobs:
-       - build-no-op
+       - build
        - ui-deploy-prod:
             requires:
-               - build-no-op
+               - build
        
    staging:
      when: pipeline.git.branch != "main" 
