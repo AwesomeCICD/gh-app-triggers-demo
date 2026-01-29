@@ -86,7 +86,7 @@ commands:
       component-name:
         type: string
       target-version:
-        type: string
+        type: integer
     steps:
       - checkout
       - run:
