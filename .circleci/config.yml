@@ -51,7 +51,7 @@ jobs:
     steps:
       - deploy-step:
            deploy-name: "build and promote to stage (auto)"
-           environment-name: <<parameters.parameters.staging-environment>>
+           environment-name: <<pipeline.parameters.staging-environment>>
            component-name: <<pipeline.parameters.component-name>>
            target-version: <<pipeline.number>>
                       
