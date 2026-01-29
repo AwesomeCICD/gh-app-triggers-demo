@@ -63,7 +63,7 @@ workflows:
      jobs:
        - build-no-op
        - ui-deploy-prod:
-            filters: pipeline.git.branch == "main" and pipeline.trigger_source == "api"
+            filters: pipeline.git.branch == "main"
             requires:
                - build-no-op
        
