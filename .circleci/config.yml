@@ -38,15 +38,11 @@ jobs:
     steps:
       - checkout
 
-  deploy-prod:
+  ui-deploy-prod:
     executor: default
     steps:
-      - run:
-          name: Skip prod deployment if it's the same version already
-          command: |
-              
       - deploy-step:
-           deploy-name: "deploy-to-prod-auto"
+           deploy-name: "manual-promotion-UI"
            environment-name: "nodejs-prod"
            component-name: <<pipeline.parameters.component-name>>
            target-version: <<pipeline.parameters.version>>
@@ -63,16 +59,16 @@ jobs:
         
 workflows:
    prod:
-     when: pipeline.git.branch == "main"
+     when: pipeline.git.branch == "main" and pipeline.trigger_source == "api"
      jobs:
        - build-no-op
-       #- deploy-prod:
-       #     filters: pipeline.git.branch == "main"
-       #     requires:
-       #        - build-no-op
+       - ui-deploy-prod:
+            filters: pipeline.git.branch == "main" and pipeline.trigger_source == "api"
+            requires:
+               - build-no-op
        
    staging:
-     when: pipeline.git.branch != "main"
+     when: pipeline.git.branch != "main" 
      jobs:
        - build
        - deploy-staging:
