@@ -4,9 +4,6 @@ parameters:
   component-name:
     type: string
     default: "nodejs"
-  version:
-    type: string
-    default: "stable"
   nodejs-prod-component-id:
     type: string
     default: "cadfd156-5e17-42ef-9a5f-4e4f5c1b26e8"
@@ -33,7 +30,7 @@ jobs:
            deploy-name: "manual-promotion-UI"
            environment-name: "nodejs-prod"
            component-name: <<pipeline.parameters.component-name>>
-           target-version: <<pipeline.parameters.version>>
+           target-version: <<pipeline.deploy.target_version>>
                       
         
 workflows:
