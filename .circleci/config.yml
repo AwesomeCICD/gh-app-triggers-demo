@@ -1,15 +1,22 @@
 version: 2.1
 
 parameters:
+  staging-environment:
+    type: string
+    default: "nodejs-staging"
   version:
     type: string
-    default: "v0.0.2"
+    default: "v0.0.1"
 
 
 executors:
   default:
     docker:
        - image: cimg/deploy:2025.01
+    environment:
+      COMPONENT_NAME: "nodejs"
+      ENVIRONMENT_NAME: "nodejs-staging"
+      TARGET_VERSION: <<pipeline.parameters.version>>
 
 jobs:
   build:
@@ -24,12 +31,12 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Plan a deploy
+          name: Plan release of staging release
           command: |
-            circleci run release plan \
-              --environment-name="staging-gh-app-test" \
-              --component-name="nodejs" \
-              --target-version=<<pipeline.parameters.version>>
+            circleci run release plan  \
+              --environment-name=${ENVIRONMENT_NAME} \
+              --component-name=${COMPONENT_NAME} \
+              --target-version=${TARGET_VERSION}
       # Your job here doing the actual deployment
       - run:
           name: Update a deploy to SUCCESS
@@ -42,7 +49,9 @@ jobs:
         
 workflows:
    main:
-     when: pipeline.git.branch == "main"
+     when: pipeline.git.branch != "main"
      jobs:
        - build
-       - deploy-staging
+       - deploy-staging:
+            requires:
+              - staging
