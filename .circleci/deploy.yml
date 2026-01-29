@@ -66,8 +66,13 @@ jobs:
              --status=CANCELED
 
 workflows:       
-  deploy-prod: 
+  main:
     when: pipeline.git.branch == "main"
+    jobs:
+      - deploy-notify
+      
+  deploy-prod: 
+    when: pipeline.git.branch == "main" and pipeline.deploy.reason == "manual promotion via UI"
     jobs:
       - deploy-prod
       - deploy-notify:
