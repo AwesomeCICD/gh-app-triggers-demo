@@ -20,9 +20,9 @@ parameters:
 
 executors:
   default:
-    docker:
-       - image: cimg/deploy:2025.01
-    resource_class: small
+    machine:
+      image: ubuntu-2404:current
+    resource_class: medium
 
 jobs:
   build-no-op:
@@ -32,8 +32,6 @@ jobs:
     executor: default
     steps:
       - checkout
-      - run: terraform version
-      - run: helm version
 
   deploy-prod:
     executor: default
