@@ -21,7 +21,7 @@ parameters:
 executors:
   default:
     docker:
-      - image: cimg/base:current
+      - image: cimg/deploy:2025.01
     resource_class: small
     
   default-machine:
